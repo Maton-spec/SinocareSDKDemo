@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import com.lidroid.xutils.util.LogUtils;
 import com.sinocare.Impl.SC_BlueToothCallBack;
 import com.sinocare.Impl.SC_BlueToothSearchCallBack;
 import com.sinocare.Impl.SC_CmdCallBack;
