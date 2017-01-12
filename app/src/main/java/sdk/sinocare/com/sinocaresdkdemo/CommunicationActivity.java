@@ -12,20 +12,24 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.sinocare.Impl.SC_BlueToothCallBack;
 import com.sinocare.Impl.SC_BlueToothSearchCallBack;
 import com.sinocare.Impl.SC_CmdCallBack;
 import com.sinocare.Impl.SC_CurrentDataCallBack;
 import com.sinocare.Impl.SC_DataCallBack;
+import com.sinocare.Impl.SC_ModifyCodeSetCmdCallBack;
 import com.sinocare.Impl.SC_TimeSetCmdCallBack;
 import com.sinocare.domain.BloodSugarData;
 import com.sinocare.domain.BlueToothInfo;
@@ -37,6 +41,9 @@ import com.sinocare.utils.LogUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import sdk.sinocare.com.sinocaresdkdemo.MsgListAdapter;
+import sdk.sinocare.com.sinocaresdkdemo.R;
 
 public class CommunicationActivity extends Activity{
 
@@ -51,7 +58,7 @@ public class CommunicationActivity extends Activity{
 	private int screenWidth;
 	private int screenHeight;
 	private BluetoothDevice device;
-
+	private static  boolean isTrividiaDevice = false;
 	//private BluetoothAdapter mBtAdapter = null;
 
 
@@ -59,7 +66,7 @@ public class CommunicationActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.hud_main);
-
+		isTrividiaDevice = true;
 		initActivity();
 		registerReceiver(mBtReceiver, makeIntentFilter());
 
@@ -83,7 +90,6 @@ public class CommunicationActivity extends Activity{
 
 		//Sn_MainHandler.open(mContext, mBtAdapter,this);
 		Sn_MainHandler = SN_MainHandler.getBlueToothInstance();
-
 		Sn_MainHandler.connectBlueTooth(device, new SC_BlueToothCallBack() {
 
 			@Override
@@ -164,6 +170,36 @@ public class CommunicationActivity extends Activity{
 		clearButton.setVisibility(View.VISIBLE);
 	}
 
+
+	private OnClickListener searchButtonClickListener = new OnClickListener() {
+		@SuppressWarnings("static-access")
+		@Override
+		public void onClick(View arg0) {
+			if (!Sn_MainHandler.isBlueToothEnable()) {
+				Intent enableIntent = new Intent(
+						BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(enableIntent, 3);
+			}
+			if (Sn_MainHandler.isConnected()) {
+				Sn_MainHandler.disconnectDevice();
+
+			} else if (Sn_MainHandler.isSearching()) {
+				Sn_MainHandler.cancelSearch();
+			} else if(Sn_MainHandler.isIdleState()){
+				//SN_MainHandler.startSearchAndConnect();
+				Sn_MainHandler.searchBlueToothDevice(new SC_BlueToothSearchCallBack<BlueToothInfo>() {
+
+					@Override
+					public void onBlueToothSeaching(BlueToothInfo newDevice) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+			}
+			setActivityInIdleState();
+		}
+	};
+
 	private OnClickListener disconnectButtonClickListener = new OnClickListener() {
 		@SuppressWarnings("static-access")
 		@Override
@@ -231,7 +267,7 @@ public class CommunicationActivity extends Activity{
 
 		View popupWindow_view = getLayoutInflater().inflate(R.layout.hud_cmd_dialog, null,false);
 
-		popupWindow = new PopupWindow(popupWindow_view, screenWidth/2, screenHeight/2, true);
+		popupWindow = new PopupWindow(popupWindow_view, screenWidth, screenHeight/2, true);
 
 		popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
 
@@ -244,15 +280,31 @@ public class CommunicationActivity extends Activity{
 		// Button connectButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_1);
 		Button currentButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_2);
 		Button historyButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_3);
-		// Button timeSettingButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_4);
+		Button timeSettingButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_4);
 		// Button getIDButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_5);
 		Button clearDatasButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_6);
 		// Button modifyCorrectButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_7);
 		Button shutdowmButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_8);
 
 		Button firstRecordButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_9);
-		Button setTime = (Button)popupWindow_view.findViewById(R.id.btn_commad_10);
+		Button lastRecordButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_10);
 		Button allRecordsButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_11);
+		Button modifyCodeButton = (Button)popupWindow_view.findViewById(R.id.btn_commad_14);
+		final EditText modifyCodeEt = (EditText) popupWindow_view.findViewById(R.id.et_modifyCode);
+		modifyCodeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final String modifycode = modifyCodeEt.getText().toString();
+				if (!TextUtils.isEmpty(modifycode)){
+					Sn_MainHandler.modifyCode(Byte.parseByte(modifycode),new SC_ModifyCodeSetCmdCallBack(){
+						@Override
+						public void onModifyCodeCmdFeedback(byte cModifyCode) {
+							Toast.makeText(CommunicationActivity.this,"当前校验码 "+cModifyCode,Toast.LENGTH_SHORT).show();
+						}
+					});
+				}
+			}
+		});
 		View layMenu = popupWindow_view.findViewById(R.id.cmd_dialog);
 		layMenu.setOnKeyListener(new View.OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -283,19 +335,10 @@ public class CommunicationActivity extends Activity{
 			}
 		});
 
-		setTime.setOnClickListener(new OnClickListener() {
+		lastRecordButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-
-				Calendar now = Calendar.getInstance();
-				Date date = now.getTime();
-				LogUtil.log("setTime",date.toLocaleString());
-				Sn_MainHandler.setMCTime(date, new SC_TimeSetCmdCallBack() {
-					@Override
-					public void onTimeSetCmdFeedback(Date date) {
-						LogUtil.log("setTime feedback",date.toLocaleString());
-					}
-				});
+				Sn_MainHandler.requestLastRecord();
 			}
 		});
 
@@ -382,17 +425,25 @@ public class CommunicationActivity extends Activity{
 				});
 			}
 		});
-        /*timeSettingButton.setOnClickListener(new OnClickListener() {
+		timeSettingButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				//SN_MainHandler.setMCTime(date);
-				SCDataBaseUtils.findAllDatas();
+				Calendar now = Calendar.getInstance();
+				Date date = now.getTime();
+				LogUtil.log("setTime",date.toLocaleString());
+				Sn_MainHandler.setMCTime(date, new SC_TimeSetCmdCallBack() {
+					@Override
+					public void onTimeSetCmdFeedback(Date date) {
+						LogUtil.log("setTime feedback",date.toLocaleString());
+					}
+				});
 
 				//SCDataBaseUtils.test();
 			}
 		});
+		/*
         getIDButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -437,9 +488,6 @@ public class CommunicationActivity extends Activity{
 				//Sn_MainHandler.shutDownMC();
 			}
 		});
-
-
-
 	}
 
 	//获取PopupWindow实例
@@ -453,7 +501,7 @@ public class CommunicationActivity extends Activity{
 		}
 	}
 
-	public class deviceListItem {
+	public static class deviceListItem {
 		String message;
 		boolean isSiri;
 
@@ -472,25 +520,31 @@ public class CommunicationActivity extends Activity{
 				//D.log("ACTION_HUD_CONNECTION_STATE_CHANGED");
 				if(Sn_MainHandler.isConnected()) {
 					setActivityInConnectedState();
+					if(isTrividiaDevice)
+						handler.post(runnable);
 				} else if(Sn_MainHandler.isIdleState()||Sn_MainHandler.isDisconnecting()) {
 					setActivityInIdleState();
+					if(isTrividiaDevice)
+						handler.removeCallbacks(runnable);
 				} else if(Sn_MainHandler.isSearching()) {
 				}
 			}else if(SN_MainHandler.ACTION_SN_ERROR_STATE.equals(action)) {
 				Bundle bundle =intent.getExtras();
 				int errorStatus = bundle.getInt(SN_MainHandler.EXTRA_ERROR_STATUS);
 				if(errorStatus==SC_ErrorStatus.SC_OVER_RANGED_TEMPERATURE)
-					list.add(new deviceListItem("错误：超过仪器测试温度范围！", false));
+					list.add(new deviceListItem("错误码：E-2", false));
 				else if(errorStatus==SC_ErrorStatus.SC_AUTH_ERROR)
 					list.add(new deviceListItem("错误：认证失败！", false));
 				else if(errorStatus==SC_ErrorStatus.SC_ERROR_OPERATE)
-					list.add(new deviceListItem("错误操作！！", false));
+					list.add(new deviceListItem("错误码：E-3！", false));
+				else if(errorStatus==SC_ErrorStatus.SC_ERROR_FACTORY)
+					list.add(new deviceListItem("错误码：E-6！", false));
 				else if(errorStatus==SC_ErrorStatus.SC_ABLOVE_MAX_VALUE)
-					list.add(new deviceListItem("错误：测试结果大于33.3mmol/L！", false));
+					list.add(new deviceListItem("错误码：HI", false));
 				else if(errorStatus==SC_ErrorStatus.SC_BELOW_LEAST_VALUE)
-					list.add(new deviceListItem("错误：测试结果小于1.1mmol/L！", false));
+					list.add(new deviceListItem("错误码：LO", false));
 				else if(errorStatus==SC_ErrorStatus.SC_LOW_POWER)
-					list.add(new deviceListItem("错误：电力不足！", false));
+					list.add(new deviceListItem("错误码：E-1！", false));
 				else if(errorStatus==SC_ErrorStatus.SC_UNDEFINED_ERROR)
 					list.add(new deviceListItem("未知错误！", false));
 				else if(errorStatus==6)
@@ -535,8 +589,6 @@ public class CommunicationActivity extends Activity{
 			{
 				case REFRESH:
 				{
-
-
 					mAdapter.notifyDataSetChanged();
 					mListView.setSelection(list.size());
 
@@ -547,4 +599,15 @@ public class CommunicationActivity extends Activity{
 		}
 
 	} ;
+
+	Handler handler = new Handler();
+	Runnable runnable = new Runnable() {
+		@Override
+		public void run() {
+			handler.postDelayed(this, 4000);
+			Sn_MainHandler.requestAllRecord();
+			//handler.removeCallbacks(runnable);
+		}
+
+	};
 }

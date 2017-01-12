@@ -47,7 +47,7 @@ public class MainActivity extends Activity{
 		mContext = this;
 		Sn_MainHandler = SN_MainHandler.getBlueToothInstance();
 		//Sn_MainHandler.initSDK(this, ProtocolVersion.WL_WEIXIN,false);//不使用4.0
-		Sn_MainHandler.initSDK(this, ProtocolVersion.TRIVIDIA_BLE);//双模 手机支持BLE 使用BLE方式
+		Sn_MainHandler.initSDK(this, ProtocolVersion.WL_1);//双模 手机支持BLE 使用BLE方式
 		searchButton = (Button) findViewById(R.id.bt_search);
 		searchButton.setOnClickListener(searchButtonClickListener);
 
@@ -143,12 +143,6 @@ public class MainActivity extends Activity{
 					// TODO Auto-generated method stub
 
 					Sn_MainHandler.cancelSearch();
-					Sn_MainHandler.cancelSearch();
-					if(item.info.getName().substring(0,3).equals("BLE")) {
-						Sn_MainHandler.setBleSupported(true);
-					}else {
-						Sn_MainHandler.setBleSupported(false);
-					}
 
 					Intent intent =  new Intent(MainActivity.this,CommunicationActivity.class);
 					Bundle bundle = new Bundle();
