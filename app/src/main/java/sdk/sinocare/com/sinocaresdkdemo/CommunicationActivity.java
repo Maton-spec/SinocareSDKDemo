@@ -358,16 +358,7 @@ public class CommunicationActivity extends Activity{
 
 					@Override
 					public void onStatusChange(int status) {
-						// TODO Auto-generated method stub
-						if(status==SC_DataStatusUpdate.SC_BLOOD_FFLASH)
-							list.add(new deviceListItem("请插入试条测试！", false));
-						else if(status==SC_DataStatusUpdate.SC_MC_TESTING)
-							list.add(new deviceListItem("正在测试，请稍后！", false));
-						else if(status==SC_DataStatusUpdate.SC_MC_SHUTTINGDOWN)
-							list.add(new deviceListItem("正在关机！", false));
-						else if(status==SC_DataStatusUpdate.SC_MC_SHUTDOWN)
-							list.add(new deviceListItem("已关机！", false));
-						loadHandler.sendEmptyMessage(REFRESH);
+
 					}
 
 					@Override
@@ -420,7 +411,7 @@ public class CommunicationActivity extends Activity{
 							//float t = data.getTemperature();
 							list.add(new deviceListItem("时间："+date.toLocaleString()+","+v+"mmol/l", false));
 						}
-						loadHandler.sendEmptyMessage(REFRESH);
+						loadHandler.sendEmptyMessageDelayed(REFRESH,100);
 					}
 				});
 			}
