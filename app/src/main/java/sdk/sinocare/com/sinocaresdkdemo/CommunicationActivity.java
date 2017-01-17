@@ -476,7 +476,7 @@ public class CommunicationActivity extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				//Sn_MainHandler.shutDownMC();
+				Sn_MainHandler.shutDownMC();
 			}
 		});
 	}

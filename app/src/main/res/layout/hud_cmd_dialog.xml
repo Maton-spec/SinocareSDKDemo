@@ -65,18 +65,21 @@
             android:id="@+id/btn_commad_9"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="TV第一条数据" />
 
         <Button
             android:id="@+id/btn_commad_10"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="TV最后一条数据" />
 
         <Button
             android:id="@+id/btn_commad_11"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="Tv所有数据" />
 
         <Button
