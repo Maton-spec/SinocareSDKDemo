@@ -148,3 +148,12 @@ SDK 接入流程如下
 	public final static int SC_BLUETOOTH_PAIR_ERROR = 0x11;//配对失败
 	public final static int SC_UNDEFINED_ERROR = 0xFF;//未知错误
 
+# 5 常见问题  
+     1、问题：认证不通过
+        出现问题分析： AccessKey 和 SecretKey 设置不正确。或者 当前无网络；
+     2、问题: 连接不成功
+        问题分析：initSDK(context, ProtocolVersion.WL_1,false);初始化 设置协议不正确
+     3、问题: 蓝牙搜索到设备
+        问题分析 ：蓝牙未打开
+     4、其他问题：
+       请联系三诺工程师；或者私信；
