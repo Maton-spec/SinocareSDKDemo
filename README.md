@@ -73,6 +73,58 @@ SDK 接入流程如下
 
 # 3.接口说明
 
+## 3.1 初始化SDK
+    initSDK(context, ProtocolVersion.WL_1,false);//不使用4.0
+    // initSDK(context, ProtocolVersion.WL_1);//双模 手机支持BLE 使用BLE方式
+    context 为当前activity的上下文;
+
+## 3.2 搜索设备
+    searchBlueToothDevice(SC_BlueToothSearchCallBack<BlueToothInfo> device)
+         SC_BlueToothSearchCallBack<BlueToothInfo> device 为异步返回类
+    实现函数 public void onBlueToothSeaching(BlueToothInfo newDevice) 
+    返回搜索到的蓝牙设备信息 详细请查询API doc
+
+## 3.3 连接
+场景：搜索到设备后，选择需要连接的设备；
+    connectBlueTooth(BluetoothDevice device, SC_BlueToothCallBack callback) 
+       连接蓝牙设备
+注意 :连接的时候需要提供需要连接的蓝牙设备
+
+## 3.4 读当前测试数据
+    readCurrentTestData(SC_CurrentDataCallBack<BloodSugarData> currentTestValue) 
+     读当前数据(只要在插试条测试后才有效)
+    SC_CurrentDataCallBack 提供了接收数据和状态的接口；详细请参照doc 
+
+## 3.5 注册监测血糖值
+    registerReceiveBloodSugarData(SC_CurrentDataCallBack<BloodSugarData> currentTestValue)
+    注册监听后，当设备状态或者有测试血糖值可监听，并返回数据和状态；
+
+## 3.6 读历史数据
+    readHistoryDatas(SC_DataCallBack<java.util.ArrayList<BloodSugarData>> list) 
+    读取历史数据(测试状态下无效)
+    读取设备存储的历史数据（最高存储200条） 历史数据以包的形式发送，当收到数据后，
+    通过onReceiveSucess(T datas, int currentPackage, int totalPackages)
+
+    数据返回接口 currentPackage 为当前包，totalPackages为总包，每包的数据量通过
+    datas.size 获取。
+## 3.7广播监听状态变化
+    //广播监听SDK ACTION
+	private final BroadcastReceiver mBtReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final String action = intent.getAction();
+			if(SN_MainHandler.ACTION_SN_CONNECTION_STATE_CHANGED.equals(action)) {
+				//蓝牙连接状态变化
+			}else if(SN_MainHandler.ACTION_SN_ERROR_STATE.equals(action)) {
+				//错误状态变化反馈
+			}else if(SN_MainHandler.ACTION_SN_MC_STATE.equals(action)) {
+				//机器状态的状态变化反馈
+			}
+		
+		}
+	};
+
+
 # 4. 血糖仪的错误码和状态码
 ## 4.1 与Sinocare设备通讯状态的枚举
 	public final static int SC_BLOOD_FFLASH = 0x01;//滴血闪烁(提示请插入试条测试)
