@@ -58,7 +58,7 @@ ACCESS_COARSE_LOCATION (必须)    用于允许应用程序访问设备位置。
 服务为蓝牙相关的服务，包名固定为com.sinocare.bluetoothle.SN_BluetoothLeService 
 
 ## 2.6 接入场景
-
+SDK 接入流程如下
 ### 2.6.1 鉴权过程
 
 # 3.接口说明
