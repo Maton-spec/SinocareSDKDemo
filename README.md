@@ -85,10 +85,10 @@ SDK 接入流程如下
     返回搜索到的蓝牙设备信息 详细请查询API doc
 
 ## 3.3 连接
-场景：搜索到设备后，选择需要连接的设备；
+    场景：搜索到设备后，选择需要连接的设备；
      connectBlueTooth(BluetoothDevice device, SC_BlueToothCallBack callback) 
        连接蓝牙设备
-注意 :连接的时候需要提供需要连接的蓝牙设备
+    注意 :连接的时候需要提供需要连接的蓝牙设备
 
 ## 3.4 读当前测试数据
     readCurrentTestData(SC_CurrentDataCallBack<BloodSugarData> currentTestValue) 
