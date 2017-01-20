@@ -86,7 +86,7 @@ SDK 接入流程如下
 
 ## 3.3 连接
 场景：搜索到设备后，选择需要连接的设备；
-    connectBlueTooth(BluetoothDevice device, SC_BlueToothCallBack callback) 
+     connectBlueTooth(BluetoothDevice device, SC_BlueToothCallBack callback) 
        连接蓝牙设备
 注意 :连接的时候需要提供需要连接的蓝牙设备
 
@@ -107,7 +107,7 @@ SDK 接入流程如下
 
     数据返回接口 currentPackage 为当前包，totalPackages为总包，每包的数据量通过
     datas.size 获取。
-## 3.7广播监听状态变化
+## 3.7 广播监听状态变化
     //广播监听SDK ACTION
 	private final BroadcastReceiver mBtReceiver = new BroadcastReceiver() {
 		@Override
@@ -123,7 +123,6 @@ SDK 接入流程如下
 		
 		}
 	};
-
 
 # 4. 血糖仪的错误码和状态码
 ## 4.1 与Sinocare设备通讯状态的枚举
