@@ -2,16 +2,16 @@ package sdk.sinocare.com.sinocaresdkdemo;
 
 import android.app.Application;
 
-import com.lidroid.xutils.util.LogcatHelper;
-import com.sinocare.bluetoothle.SN_BluetoothLeConnection;
+import com.sinocare.handler.SN_MainHandler;
+import com.sinocare.protocols.ProtocolVersion;
 
 public class BleApplication extends Application {
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		SN_BluetoothLeConnection BleConnection = SN_BluetoothLeConnection.getBlueToothBleConnection(this);
-		BleConnection.initBleApplicationService();
-		LogcatHelper.getInstance(this).start();
+		//初始化
+		SN_MainHandler.getBlueToothInstance().initSDK(this, ProtocolVersion.WL_1);
 	}
 	
 }
